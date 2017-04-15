@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Vlp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/main.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+    <style>
+      html, body, #main, #app {
+       height: 100%;
+       width: 100%;
+       margin: 0;
+       padding: 0;
+    }
+
+    .transitionable {
+      /*border: dotted 3px orange;*/
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+
+    }
+
+    #next {
+      top: 0;
+      left: 0;
+      background: blue;
+      /*border: dotted 3px yellow;*/
+      height: 100%;
+      opacity: 0.7;
+      width: 100%;
+      /*//z-index: 1;*/
+      position: absolute;
+    }
+
+    /*.hideOnRight {
+      left: -100%;
+      top: 0;
+    }*/
+
+    #current {
+      top: 0;
+      left: 0;
+      background: orange;
+      opacity: 0.7;
+      /*border: dotted 6px blue;*/
+      height: 100%;
+      width: 100%;
+      /*z-index: 0;*/
+      position: absolute;
+    }
+/*
+    .transitionable .appear{
+      background-color: blue;
+    }
+
+    .transitionable .appear-active{
+      background-color: navy;
+    }
+
+    .transitionable .enter{
+      background-color: orange;
+    }
+
+    .transitionable .enter-active{
+      background-color: red;
+    }
+
+    .transitionable .leave{
+      background-color: yellow;
+    }
+
+    .transitionable .leave-active{
+      background-color: cyan;
+    }*/
+
+    </style>
+  </head>
+  <body class="w-100 sans-serif">
+    <div id="main"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
