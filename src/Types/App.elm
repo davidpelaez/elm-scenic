@@ -18,5 +18,5 @@ type LayoutState
 
 type Page
     = WelcomePage
-    | NotFoundPage
+    | OtherPage
     | MenuPage

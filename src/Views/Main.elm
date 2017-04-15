@@ -3,6 +3,7 @@ module Views.Main exposing (rootView)
 import Html exposing (..)
 import Types.App exposing (..)
 import Html.Attributes exposing (class, id)
+import Html.Events exposing (onClick)
 import Html.Keyed as Keyed exposing (node)
 
 
@@ -26,14 +27,19 @@ rootView layout =
             Keyed.node "div" [ class "transitionable" ] [ currentPageView [] current, nextPageView [] next ]
 
 
+transitionButton : Page -> Html Msg
+transitionButton page =
+    button [ onClick <| GoToPage page ] [ text "Go to next destination" ]
+
+
 renderPage : Page -> Html Msg
 renderPage page =
     case page of
         MenuPage ->
-            text "This is the welcome page...."
+            div [] [ text "MENU", transitionButton OtherPage ]
 
         WelcomePage ->
-            text "This is the welcome page...."
+            div [] [ text "WELCOME", transitionButton MenuPage ]
 
-        NotFoundPage ->
-            text "Not founf or lacking permissions"
+        OtherPage ->
+            div [] [ text "OTHER", transitionButton WelcomePage ]
