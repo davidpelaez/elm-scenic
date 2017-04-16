@@ -15,70 +15,33 @@
     }
 
     .transitionable {
-      /*border: dotted 3px orange;*/
       height: 100%;
       width: 100%;
-      overflow: hidden;
       position: relative;
+      box-sizing: border-box;
+    }
 
+    #next, #current {
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      opacity: 0.7;
     }
 
     #next {
-      top: 0;
-      left: 0;
       background: blue;
-      /*border: dotted 3px yellow;*/
-      height: 100%;
-      opacity: 0.7;
-      width: 100%;
-      /*//z-index: 1;*/
-      position: absolute;
     }
-
-    /*.hideOnRight {
-      left: -100%;
-      top: 0;
-    }*/
 
     #current {
-      top: 0;
-      left: 0;
       background: orange;
-      opacity: 0.7;
-      /*border: dotted 6px blue;*/
-      height: 100%;
-      width: 100%;
-      /*z-index: 0;*/
-      position: absolute;
-    }
-/*
-    .transitionable .appear{
-      background-color: blue;
     }
 
-    .transitionable .appear-active{
-      background-color: navy;
-    }
-
-    .transitionable .enter{
-      background-color: orange;
-    }
-
-    .transitionable .enter-active{
-      background-color: red;
-    }
-
-    .transitionable .leave{
-      background-color: yellow;
-    }
-
-    .transitionable .leave-active{
-      background-color: cyan;
-    }*/
 
     </style>
   </head>
-  <body class="w-100 sans-serif">
+  <body>
     <div id="main"></div>
     <script src="/app.js"></script>
   </body>
