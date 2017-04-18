@@ -1,43 +1,43 @@
 module Main exposing (..)
 
-import Html exposing (Html)
-import Task
-import Process
-import Time exposing (Time, millisecond)
-import Html exposing (..)
-import Html.Attributes exposing (class, id)
+import Scenic exposing (programWithFlags, ProgramWithFlags, Outcome(..))
+import Navigation exposing (Location)
 import Html.Events exposing (onClick)
-import Html.Keyed as Keyed exposing (node)
+import UrlParser exposing ((</>), (<?>), s, int, stringParam, top, string, map, Parser)
+import Html exposing (Html, text, button, div)
 
 
-main : Program Never Model Msg
-main =
-    Html.program
-        { view = view
-        , init = init
-        , update = update
-        , subscriptions = subscriptions
-        }
+type alias RoutingOutcome =
+    Outcome Page
 
 
-view : Model -> Html Msg
-view model =
-    rootView model
+type Route
+    = AlohaRoute
+    | OtherRoute
+    | NotFoundRoute
+
+
+possibleRoutes : Parser (Route -> x) x
+possibleRoutes =
+    UrlParser.oneOf
+        [ map AlohaRoute top
+        , map OtherRoute (s "other")
+        ]
+
+
+parseRoute : Location -> Route
+parseRoute location =
+    UrlParser.parsePath possibleRoutes location
+        |> Maybe.withDefault NotFoundRoute
 
 
 type Msg
-    = Log String
-    | SetLayoutState LayoutState
+    = NoOp
     | GoToPage Page
 
 
-type alias Model =
-    LayoutState
-
-
-type LayoutState
-    = CurrentPageOnly Page
-    | NextPageWillEnter Page Page
+type alias InitFlags =
+    {}
 
 
 type Page
@@ -46,34 +46,38 @@ type Page
     | MenuPage
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+main : Program InitFlags (Scenic.LayoutState Page) (Scenic.Msg Page Msg)
+main =
+    Scenic.programWithFlags
+        { view = view
+        , init = initWithFlags
+        , update = update
+        , subscriptions =
+            (\page -> Sub.none)
+        , pageToRoute = pageToRoute
+        , routeToPage = routeToPage
+        , parseRoute = parseRoute
+        }
 
 
-init : ( Model, Cmd Msg )
-init =
-    CurrentPageOnly WelcomePage ! []
+pageToRoute : Page -> Route
+pageToRoute page =
+    NotFoundRoute
 
 
-nextPageView : List (Attribute Msg) -> Page -> ( String, Html Msg )
-nextPageView attributes page =
-    ( "next", div (class "animated" :: class "slideInRight" :: id "next" :: attributes) [ renderPage page ] )
+routeToPage : Route -> Page
+routeToPage route =
+    WelcomePage
 
 
-currentPageView : List (Attribute Msg) -> Page -> ( String, Html Msg )
-currentPageView attributes page =
-    ( "current", div (id "current" :: attributes) [ renderPage page ] )
+update : Msg -> Page -> ( Page, Cmd Msg, RoutingOutcome )
+update msg page =
+    case msg of
+        GoToPage newPage ->
+            ( page, Cmd.none, ChangePage newPage )
 
-
-rootView : LayoutState -> Html Msg
-rootView layout =
-    case layout of
-        CurrentPageOnly current ->
-            Keyed.node "div" [ class "transitionable" ] [ currentPageView [] current ]
-
-        NextPageWillEnter current next ->
-            Keyed.node "div" [ class "transitionable" ] [ currentPageView [] current, nextPageView [] next ]
+        _ ->
+            ( page, Cmd.none, KeepCurrentPage )
 
 
 transitionButton : Page -> Html Msg
@@ -81,8 +85,8 @@ transitionButton page =
     button [ onClick <| GoToPage page ] [ text <| ("Go to " ++ toString page) ]
 
 
-renderPage : Page -> Html Msg
-renderPage page =
+view : Page -> Html Msg
+view page =
     case page of
         MenuPage ->
             div [] [ text "MENU", transitionButton OtherPage ]
@@ -94,39 +98,37 @@ renderPage page =
             div [] [ text "OTHER", transitionButton WelcomePage ]
 
 
-delay : Time -> msg -> Cmd msg
-delay time msg =
-    Process.sleep (time * millisecond)
-        |> Task.andThen (always <| Task.succeed msg)
-        |> Task.perform identity
+subscriptions : Page -> Sub Msg
+subscriptions page =
+    Sub.none
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        SetLayoutState newLayout ->
-            let
-                nextCmd =
-                    case newLayout of
-                        CurrentPageOnly current ->
-                            Cmd.none
+initWithFlags : InitFlags -> Route -> ( Page, Cmd Msg, RoutingOutcome )
+initWithFlags flags route =
+    let
+        _ =
+            Debug.log "Booting with flags" (toString flags)
 
-                        NextPageWillEnter current next ->
-                            delay 1000 (SetLayoutState (CurrentPageOnly next))
-            in
-                newLayout ! [ nextCmd ]
-
-        GoToPage newPage ->
-            case model of
-                CurrentPageOnly current ->
-                    update (SetLayoutState (NextPageWillEnter current newPage)) model
-
-                _ ->
-                    model ! []
-
-        Log x ->
-            let
-                _ =
-                    Debug.log "LOGGING" x
-            in
-                model ! []
+        --
+        -- route =
+        --     parseRoute location
+        --
+        -- _ =
+        --     Debug.log "Booting with location" (toString location)
+        --
+        -- _ =
+        --     Debug.log "Booting with route" (toString route)
+        --
+        -- ( page, redirectMsg ) =
+        --     case flags.apiKey of
+        --         Just apiKey ->
+        --             Routing.privatePageOfRoute apiKey route
+        --
+        --         Nothing ->
+        --             Routing.publicPageOfRoute route
+        --
+        -- ( updatedPage, initialCmd ) =
+        --     update redirectMsg <|
+        --         { layout = CurrentPageOnly page }
+    in
+        ( WelcomePage, Cmd.none, KeepCurrentPage )
