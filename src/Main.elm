@@ -7,6 +7,21 @@ import UrlParser exposing ((</>), (<?>), s, int, stringParam, top, string, map, 
 import Html exposing (Html, text, button, div)
 
 
+--
+-- xarvh
+-- [4:32 PM]
+-- I think so
+--
+-- [4:32]
+-- why do you have a `routeToPage` and a `parseRoute`?
+--
+-- [4:33]
+-- rather than, say a `locationToPage`?
+--
+-- davidpelaez [4:34 PM]
+-- maybe only locationToPage and the reverse are needed. The idea is that you have a way from a URL into a page and when you change to a page that should become a URL.
+
+
 type alias RoutingOutcome =
     Outcome Page
 
@@ -55,9 +70,23 @@ main =
         , subscriptions =
             (\page -> Sub.none)
         , pageToRoute = pageToRoute
+        , pageToUrl = pageToUrl
         , routeToPage = routeToPage
         , parseRoute = parseRoute
         }
+
+
+pageToUrl : Page -> String
+pageToUrl page =
+    case page of
+        WelcomePage ->
+            "/"
+
+        OtherPage ->
+            "/other"
+
+        MenuPage ->
+            "/menu"
 
 
 pageToRoute : Page -> Route
