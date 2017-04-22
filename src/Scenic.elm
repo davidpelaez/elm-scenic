@@ -15,17 +15,13 @@ type Outcome page
     | KeepCurrentPage
 
 
-type alias ProgramWithFlags flags msg route page =
-    { init : flags -> route -> ( page, Cmd msg, Outcome page )
+type alias ProgramWithFlags flags msg page =
+    { init : flags -> Location -> ( page, Cmd msg, Outcome page )
     , update : msg -> page -> ( page, Cmd msg, Outcome page )
     , subscriptions : page -> Sub msg
     , view : page -> Html msg
-    , pageToRoute : page -> route
-    , routeToPage :
-        route -> page
-        -- TODO Maybe get rid of this?
     , pageToUrl : page -> String
-    , parseRoute : Location -> route
+    , parseLocation : Location -> page
     }
 
 
@@ -82,20 +78,19 @@ outcomeToCmd outcome =
             Cmd.none
 
 
-programWithFlags : ProgramWithFlags flags msg route page -> Program flags (LayoutState page) (Msg page msg)
+programWithFlags : ProgramWithFlags flags msg page -> Program flags (LayoutState page) (Msg page msg)
 programWithFlags desc =
     let
         wrappedInit : flags -> Location -> ( LayoutState page, Cmd (Msg page msg) )
         wrappedInit flags location =
             let
-                route : route
-                route =
-                    desc.parseRoute location
-
-                ( initialModel, initialCmd, routingOutcome ) =
-                    desc.init flags route
+                -- initialPage : Location -> page
+                -- initialPage location =
+                --     desc.parseLocation location
+                ( initialPage, initialCmd, routingOutcome ) =
+                    desc.init flags location
             in
-                ( CurrentPageOnly initialModel, Cmd.batch [ (Cmd.map SubMsg initialCmd), outcomeToCmd routingOutcome ] )
+                ( CurrentPageOnly initialPage, Cmd.batch [ (Cmd.map SubMsg initialCmd), outcomeToCmd routingOutcome ] )
 
         wrappedUpdate : Msg page msg -> LayoutState page -> ( LayoutState page, Cmd (Msg page msg) )
         wrappedUpdate msg layout =

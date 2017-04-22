@@ -5,6 +5,7 @@ import Navigation exposing (Location)
 import Html.Events exposing (onClick)
 import UrlParser exposing ((</>), (<?>), s, int, stringParam, top, string, map, Parser)
 import Html exposing (Html, text, button, div)
+import UrlParser as Url exposing ((</>), (<?>), s, int, stringParam, top)
 
 
 --
@@ -26,24 +27,19 @@ type alias RoutingOutcome =
     Outcome Page
 
 
-type Route
-    = AlohaRoute
-    | OtherRoute
-    | NotFoundRoute
 
-
-possibleRoutes : Parser (Route -> x) x
-possibleRoutes =
-    UrlParser.oneOf
-        [ map AlohaRoute top
-        , map OtherRoute (s "other")
-        ]
-
-
-parseRoute : Location -> Route
-parseRoute location =
-    UrlParser.parsePath possibleRoutes location
-        |> Maybe.withDefault NotFoundRoute
+--
+-- type Route
+--     = AlohaRoute
+--     | OtherRoute
+--     | NotFoundRoute
+--
+--
+-- parseRoute : Location -> Route
+-- parseRoute location =
+--     UrlParser.parsePath possibleRoutes location
+--         |> Maybe.withDefault NotFoundRoute
+--
 
 
 type Msg
@@ -69,11 +65,24 @@ main =
         , update = update
         , subscriptions =
             (\page -> Sub.none)
-        , pageToRoute = pageToRoute
         , pageToUrl = pageToUrl
-        , routeToPage = routeToPage
-        , parseRoute = parseRoute
+        , parseLocation = parseLocation
         }
+
+
+parseLocation : Location -> Page
+parseLocation location =
+    UrlParser.parsePath possibleRoutes location
+        |> Maybe.withDefault OtherPage
+
+
+possibleRoutes : Parser (Page -> x) x
+possibleRoutes =
+    Url.oneOf
+        [ Url.map WelcomePage top
+        , Url.map MenuPage (s "menu")
+        , Url.map OtherPage (s "other")
+        ]
 
 
 pageToUrl : Page -> String
@@ -89,14 +98,14 @@ pageToUrl page =
             "/menu"
 
 
-pageToRoute : Page -> Route
-pageToRoute page =
-    NotFoundRoute
 
-
-routeToPage : Route -> Page
-routeToPage route =
-    WelcomePage
+-- pageToRoute : Page -> Route
+-- pageToRoute page =
+--     NotFoundRoute
+--
+-- routeToPage : Route -> Page
+-- routeToPage route =
+--     WelcomePage
 
 
 update : Msg -> Page -> ( Page, Cmd Msg, RoutingOutcome )
@@ -132,8 +141,8 @@ subscriptions page =
     Sub.none
 
 
-initWithFlags : InitFlags -> Route -> ( Page, Cmd Msg, RoutingOutcome )
-initWithFlags flags route =
+initWithFlags : InitFlags -> Location -> ( Page, Cmd Msg, RoutingOutcome )
+initWithFlags flags location =
     let
         _ =
             Debug.log "Booting with flags" (toString flags)
@@ -160,4 +169,4 @@ initWithFlags flags route =
         --     update redirectMsg <|
         --         { layout = CurrentPageOnly page }
     in
-        ( WelcomePage, Cmd.none, KeepCurrentPage )
+        ( parseLocation location, Cmd.none, KeepCurrentPage )
