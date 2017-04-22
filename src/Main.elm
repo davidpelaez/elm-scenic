@@ -8,38 +8,8 @@ import Html exposing (Html, text, button, div)
 import UrlParser as Url exposing ((</>), (<?>), s, int, stringParam, top)
 
 
---
--- xarvh
--- [4:32 PM]
--- I think so
---
--- [4:32]
--- why do you have a `routeToPage` and a `parseRoute`?
---
--- [4:33]
--- rather than, say a `locationToPage`?
---
--- davidpelaez [4:34 PM]
--- maybe only locationToPage and the reverse are needed. The idea is that you have a way from a URL into a page and when you change to a page that should become a URL.
-
-
 type alias RoutingOutcome =
     Outcome Page
-
-
-
---
--- type Route
---     = AlohaRoute
---     | OtherRoute
---     | NotFoundRoute
---
---
--- parseRoute : Location -> Route
--- parseRoute location =
---     UrlParser.parsePath possibleRoutes location
---         |> Maybe.withDefault NotFoundRoute
---
 
 
 type Msg
@@ -98,16 +68,6 @@ pageToUrl page =
             "/menu"
 
 
-
--- pageToRoute : Page -> Route
--- pageToRoute page =
---     NotFoundRoute
---
--- routeToPage : Route -> Page
--- routeToPage route =
---     WelcomePage
-
-
 update : Msg -> Page -> ( Page, Cmd Msg, RoutingOutcome )
 update msg page =
     case msg of
@@ -147,16 +107,6 @@ initWithFlags flags location =
         _ =
             Debug.log "Booting with flags" (toString flags)
 
-        --
-        -- route =
-        --     parseRoute location
-        --
-        -- _ =
-        --     Debug.log "Booting with location" (toString location)
-        --
-        -- _ =
-        --     Debug.log "Booting with route" (toString route)
-        --
         -- ( page, redirectMsg ) =
         --     case flags.apiKey of
         --         Just apiKey ->
