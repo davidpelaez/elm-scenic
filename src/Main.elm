@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Scenic exposing (programWithFlags, ProgramWithFlags, Outcome(..))
+import Scenic exposing (programWithFlags, Transition(..), ProgramWithFlags, Outcome(..))
 import Navigation exposing (Location)
 import Html.Events exposing (onClick)
 import UrlParser exposing ((</>), (<?>), s, int, stringParam, top, string, map, Parser)
@@ -14,7 +14,7 @@ type alias RoutingOutcome =
 
 type Msg
     = NoOp
-    | GoToPage Page
+    | GoToPage Page Transition
 
 
 type alias InitFlags =
@@ -71,8 +71,8 @@ pageToUrl page =
 update : Msg -> Page -> ( Page, Cmd Msg, RoutingOutcome )
 update msg page =
     case msg of
-        GoToPage newPage ->
-            ( page, Cmd.none, ChangePage newPage )
+        GoToPage newPage transition ->
+            ( page, Cmd.none, ChangePage newPage transition )
 
         _ ->
             ( page, Cmd.none, KeepCurrentPage )
@@ -80,7 +80,7 @@ update msg page =
 
 transitionButton : Page -> Html Msg
 transitionButton page =
-    button [ onClick <| GoToPage page ] [ text <| ("Go to " ++ toString page) ]
+    button [ onClick <| GoToPage page SlideInRight ] [ text <| ("Go to " ++ toString page) ]
 
 
 view : Page -> Html Msg
