@@ -1,5 +1,8 @@
 module Scenic exposing (programWithFlags, Msg, ProgramWithFlags, Outcome(..), LayoutState, Transition(..))
 
+{-| Single page apps usually require animations and have common layouts. This package is an experimental wrap of ProgramWithFlags to a good starter for SPA including routing, basic transitions and layouts. Work in progress.
+-}
+
 import Html exposing (Html, div, Attribute)
 import Navigation exposing (Location)
 import Html exposing (Html)
