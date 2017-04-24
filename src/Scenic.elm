@@ -1,6 +1,9 @@
-module Scenic exposing (programWithFlags, Msg, ProgramWithFlags, Outcome(..), LayoutState, Transition(..))
+module Scenic exposing (programWithFlags, ProgramWithFlags, Outcome(..), LayoutState, Transition(..))
 
 {-| Single page apps usually require animations and have common layouts. This package is an experimental wrap of ProgramWithFlags to a good starter for SPA including routing, basic transitions and layouts. Work in progress.
+
+# Misc
+@docs programWithFlags, ProgramWithFlags, Outcome, LayoutState, Transition
 -}
 
 import Html exposing (Html, div, Attribute)
@@ -13,17 +16,23 @@ import Html.Attributes exposing (class, id)
 import Html.Keyed as Keyed exposing (node)
 
 
+{-| Possible transitions that you can use when the outcome of an update is ChangePage
+-}
 type Transition
     = SlideInRight
     | SlideOutLeft
     | NoTransition
 
 
+{-| Describe what Scenic should do to your layout after an update
+-}
 type Outcome page
     = ChangePage page Transition
     | KeepCurrentPage
 
 
+{-| This is the Type describing what Sceninc expects to build a managed program. Currently only a wrapper for a program with flags exists since SPA usually need access to LocalStorage so this is how you'd pass the initial data to boot.
+-}
 type alias ProgramWithFlags flags msg page =
     { init : flags -> Location -> ( page, Cmd msg, Outcome page )
     , update : msg -> page -> ( page, Cmd msg, Outcome page )
@@ -34,6 +43,8 @@ type alias ProgramWithFlags flags msg page =
     }
 
 
+{-| Exposed only for type signatures
+-}
 type Msg page msg
     = LocationChange Location
     | GoToPage page Transition
@@ -41,6 +52,8 @@ type Msg page msg
     | SubMsg msg
 
 
+{-| Internal representation, only exposed so you can write any required program signatures on your main module
+-}
 type LayoutState page
     = CurrentPageOnly page
     | NextPageWillEnter page page Transition
@@ -131,6 +144,8 @@ outcomeToCmd outcome =
             Cmd.none
 
 
+{-| use this to build a Scenic managed program.
+-}
 programWithFlags : ProgramWithFlags flags msg page -> Program flags (LayoutState page) (Msg page msg)
 programWithFlags desc =
     let
