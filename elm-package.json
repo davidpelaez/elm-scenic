@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "Experimental package of common layouts & animations wrapping Program",
     "repository": "https://github.com/davidpelaez/elm-scenic.git",
     "license": "MIT",
