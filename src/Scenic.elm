@@ -82,7 +82,7 @@ currentPageView attributes pageHtml transition =
             ( "current", div (id "current" :: attributes) [ pageHtml ] )
 
         SlideOutLeft ->
-            ( "next", div (class "animated" :: class "slideOutLeft" :: id "current" :: attributes) [ pageHtml ] )
+            ( "next", div (class "animated slideOutLeft onTop" :: id "current" :: attributes) [ pageHtml ] )
 
 
 rootView : (page -> Html msg) -> LayoutState page -> Html (Msg page msg)

@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import UrlParser exposing ((</>), (<?>), s, int, stringParam, top, string, map, Parser)
 import Html exposing (Html, text, button, div)
 import UrlParser as Url exposing ((</>), (<?>), s, int, stringParam, top)
+import Html.Attributes exposing (class)
 
 
 type alias RoutingOutcome =
@@ -78,22 +79,39 @@ update msg page =
             ( page, Cmd.none, KeepCurrentPage )
 
 
-transitionButton : Page -> Html Msg
-transitionButton page =
-    button [ onClick <| GoToPage page SlideInRight ] [ text <| ("Go to " ++ toString page) ]
+transitionButton : Page -> Transition -> Html Msg
+transitionButton page transition =
+    button [ onClick <| GoToPage page transition ] [ text <| ("Go to " ++ toString page) ]
+
+
+visualBlock : Page -> Html Msg
+visualBlock page =
+    let
+        pageClass =
+            case page of
+                WelcomePage ->
+                    "welcome"
+
+                MenuPage ->
+                    "menu"
+
+                OtherPage ->
+                    "other"
+    in
+        div [ class pageClass, class "block" ] []
 
 
 view : Page -> Html Msg
 view page =
     case page of
         MenuPage ->
-            div [] [ text "MENU", transitionButton OtherPage ]
+            div [] [ text "MENU", transitionButton OtherPage SlideOutLeft, visualBlock page ]
 
         WelcomePage ->
-            div [] [ text "WELCOME", transitionButton MenuPage ]
+            div [] [ text "WELCOME", transitionButton MenuPage SlideInRight, visualBlock page ]
 
         OtherPage ->
-            div [] [ text "OTHER", transitionButton WelcomePage ]
+            div [] [ text "OTHER", transitionButton WelcomePage SlideInRight, visualBlock page ]
 
 
 subscriptions : Page -> Sub Msg
