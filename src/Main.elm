@@ -28,7 +28,10 @@ type Page
     | MenuPage
 
 
-main : Program InitFlags (Scenic.LayoutState Page) (Scenic.Msg Page Msg)
+
+--main : Program InitFlags (Scenic.LayoutState Page) (Scenic.Msg Page Msg)
+
+
 main =
     Scenic.programWithFlags
         { view = view
